@@ -1,58 +1,50 @@
-
-/* Resetando margens e paddings padrão */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Estilos gerais do corpo */
 body {
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #FFB6C1, #FF5733); /* Cor de fundo vibrante */
+    background: linear-gradient(135deg, #8e44ad, #9b59b6); /* Roxo vibrante */
     color: #fff;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
-    flex-direction: column;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 30px;
 }
 
-/* Página Home */
 #homePage {
-    width: 80%;
-    max-width: 900px;
-    padding: 40px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
-    text-align: center;
+    width: 90%;
+    max-width: 1000px;
+    padding: 30px;
     background-color: #fff;
-    border: 2px solid #FF5733;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    border: 3px solid #9b59b6;
 }
 
-/* Título */
 #homePage h2 {
-    color: #FF5733;
+    color: #8e44ad;
     margin-bottom: 20px;
-    font-size: 2em;
+    font-size: 2.2em;
     font-weight: bold;
 }
 
-/* Formulário de registro de humor */
 #humorForm {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 
 .radio-buttons {
-    margin-bottom: 15px;
     display: flex;
     justify-content: center;
     gap: 20px;
+    margin-bottom: 15px;
 }
 
 .radio-buttons input {
@@ -60,13 +52,17 @@ body {
 }
 
 .radio-buttons label {
+    font-size: 1.8em;
     cursor: pointer;
-    font-size: 1.5em;
-    transition: transform 0.3s;
+    padding: 10px 15px;
+    border-radius: 10px;
+    background-color: #9b59b6;
+    color: white;
+    transition: background-color 0.3s;
 }
 
 .radio-buttons input:checked + label {
-    transform: scale(1.2);
+    background-color: #6c3483;
 }
 
 #humorForm textarea {
@@ -74,22 +70,17 @@ body {
     padding: 15px;
     width: 100%;
     max-width: 400px;
-    border: 2px solid #FF5733;
+    border: 2px solid #9b59b6;
     border-radius: 8px;
     font-size: 1em;
     color: #333;
     background-color: #f9f9f9;
     resize: none;
-    transition: border-color 0.3s;
-}
-
-#humorForm textarea:focus {
-    border-color: #FF2D2D; /* Cor ao focar */
 }
 
 #humorForm button {
     padding: 12px 30px;
-    background-color: #FF5733;
+    background-color: #8e44ad;
     color: white;
     border: none;
     border-radius: 8px;
@@ -99,44 +90,29 @@ body {
 }
 
 #humorForm button:hover {
-    background-color: #FF2D2D;
+    background-color: #6c3483;
 }
 
-/* Lista de registros */
 #registroLista {
     margin-top: 30px;
     padding: 20px;
-    background-color: #f9f9f9;
+    background-color: #f4ecf7;
     border-radius: 8px;
     max-height: 300px;
     overflow-y: auto;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .registroItem {
-    background-color: #FF5733;
+    background-color: #9b59b6;
     color: white;
     padding: 15px;
     margin: 10px 0;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    font-size: 1em;
 }
 
-.registroItem strong {
-    font-size: 1.2em;
-}
-
-.registroItem p {
-    font-size: 0.9em;
-    color: #f9f9f9;
-}
-
-/* Estilos para o gráfico */
 #humorChart {
     width: 100%;
+    max-width: 600px;
     height: 400px;
-    margin-top: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    margin: 30px auto 0;
 }

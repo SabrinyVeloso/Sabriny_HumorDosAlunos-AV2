@@ -10,6 +10,8 @@ let registrosHumor = [
     { humor: "neutro", comentario: "Nada demais hoje.", data: "07/05/2025" }
 ];
 
+let chartInstance; // Variável global para atualizar o gráfico
+
 function exibirRegistros() {
     registroLista.innerHTML = '';
     registrosHumor.forEach(registro => {
@@ -18,7 +20,7 @@ function exibirRegistros() {
         div.innerHTML = `
             <strong>${registro.data}</strong>
             <p>Humor: ${registro.humor}</p>
-            <p>Comentário: ${registro.comentario}</p>
+            <p>Comentário: ${registro.comentario || '(Sem comentário)'}</p>
         `;
         registroLista.appendChild(div);
     });
@@ -28,40 +30,52 @@ function atualizarGrafico() {
     const ctx = humorChart.getContext('2d');
 
     const dadosHumor = { feliz: 0, triste: 0, neutro: 0 };
-
     registrosHumor.forEach(registro => {
         dadosHumor[registro.humor]++;
     });
 
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Feliz', 'Triste', 'Neutro'],
-            datasets: [{
-                label: 'Contagem de Humores',
-                data: [dadosHumor.feliz, dadosHumor.triste, dadosHumor.neutro],
-                backgroundColor: ['#FF5733', '#2196F3', '#4CAF50'],
-                borderColor: ['#D63F28', '#1E88E5', '#388E3C'],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
+    const chartData = {
+        labels: ['Feliz', 'Triste', 'Neutro'],
+        datasets: [{
+            label: 'Humores',
+            data: [dadosHumor.feliz, dadosHumor.triste, dadosHumor.neutro],
+            backgroundColor: ['#8e44ad', '#5dade2', '#58d68d'],
+            borderColor: '#fff',
+            borderWidth: 2
+        }]
+    };
+
+    const chartOptions = {
+        responsive: true,
+        cutout: '60%', // Deixa o centro furado (doughnut)
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    color: '#333',
+                    font: {
+                        size: 14
+                    }
                 }
             }
         }
+    };
+
+    // Se já existe um gráfico, destrói antes de criar outro
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+    chartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: chartData,
+        options: chartOptions
     });
 }
 
 humorForm.addEventListener('submit', function (event) {
     event.preventDefault();
 
-    const comentario = comentarioInput.value;
     let humorSelecionado = null;
-
     radioButtons.forEach(radio => {
         if (radio.checked) {
             humorSelecionado = radio.value;
@@ -73,6 +87,8 @@ humorForm.addEventListener('submit', function (event) {
         return;
     }
 
+    const comentario = comentarioInput.value;
+
     const novoRegistro = {
         comentario: comentario,
         humor: humorSelecionado,
@@ -80,16 +96,7 @@ humorForm.addEventListener('submit', function (event) {
     };
 
     registrosHumor.push(novoRegistro);
-
-    const registroDiv = document.createElement('div');
-    registroDiv.classList.add('registroItem');
-    registroDiv.innerHTML = `
-        <strong>${novoRegistro.data}</strong>
-        <p>Humor: ${novoRegistro.humor}</p>
-        <p>Comentário: ${novoRegistro.comentario}</p>
-    `;
-    registroLista.prepend(registroDiv);
-
+    exibirRegistros();
     atualizarGrafico();
 
     comentarioInput.value = '';
