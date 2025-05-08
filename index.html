@@ -7,29 +7,41 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    
     <div id="homePage">
-        <h2>Bem-vindo ao Sistema de Registro de Humor!</h2>
-        
-        <!-- Formulário de Adicionar Humor -->
-        <form id="humorForm">
-            <div class="radio-buttons">
-                <input type="radio" name="humor" value="feliz" id="feliz">
-                <label for="feliz">😊 Feliz</label>
-                <input type="radio" name="humor" value="triste" id="triste">
-                <label for="triste">😢 Triste</label>
-                <input type="radio" name="humor" value="neutro" id="neutro">
-                <label for="neutro">😐 Neutro</label>
+        <h2>Registro de Humor</h2>
+
+        <div class="containerHorizontal">
+            <!-- Coluna Esquerda -->
+            <div class="coluna esquerda">
+                <form id="humorForm">
+                    <label for="dataRegistro" class="formLabel">Data do registro:</label>
+                    <input type="date" id="dataRegistro" class="inputCampo">
+
+                    <div class="radio-buttons">
+                        <input type="radio" name="humor" value="feliz" id="feliz">
+                        <label for="feliz">😊 Feliz</label>
+                        <input type="radio" name="humor" value="triste" id="triste">
+                        <label for="triste">😢 Triste</label>
+                        <input type="radio" name="humor" value="neutro" id="neutro">
+                        <label for="neutro">😐 Neutro</label>
+                    </div>
+
+                    <label for="disciplina" class="formLabel">Disciplina (opcional):</label>
+                    <input type="text" id="disciplina" class="inputCampo" placeholder="Ex: Matemática">
+
+                    <textarea id="comentario" placeholder="Comentário (opcional)..."></textarea>
+                    <button type="submit" id="humorFormSubmit">Adicionar</button>
+                </form>
             </div>
 
-            <textarea id="comentario" placeholder="Compartilhe seu comentário (opcional)..."></textarea>
-            <button type="submit" id="humorFormSubmit">Adicionar Registro</button>
-        </form>
+            <!-- Coluna Direita -->
+            <div class="coluna direita">
+                <div id="registroLista"></div>
+                <canvas id="humorChart"></canvas>
+            </div>
+        </div>
 
-        <!-- Lista de Registros -->
-        <div id="registroLista"></div>
-
-        <!-- Gráfico de Humor -->
-        <canvas id="humorChart"></canvas>
     </div>
 
     <script src="script.js"></script>

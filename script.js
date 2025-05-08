@@ -3,14 +3,15 @@ const comentarioInput = document.getElementById('comentario');
 const radioButtons = document.getElementsByName('humor');
 const registroLista = document.getElementById('registroLista');
 const humorChart = document.getElementById('humorChart');
+const dataInput = document.getElementById('dataRegistro');
+const disciplinaInput = document.getElementById('disciplina');
 
 let registrosHumor = [
-    { humor: "feliz", comentario: "Foi um ótimo dia!", data: "05/05/2025" },
-    { humor: "triste", comentario: "Estou me sentindo um pouco para baixo.", data: "06/05/2025" },
-    { humor: "neutro", comentario: "Nada demais hoje.", data: "07/05/2025" }
+    { humor: "feliz", comentario: "Foi um ótimo dia!", data: "05/05/2025", disciplina: "Matemática" },
+    { humor: "triste", comentario: "Me senti cansado.", data: "06/05/2025", disciplina: "" },
 ];
 
-let chartInstance; // Variável global para atualizar o gráfico
+let chartInstance;
 
 function exibirRegistros() {
     registroLista.innerHTML = '';
@@ -18,8 +19,8 @@ function exibirRegistros() {
         const div = document.createElement('div');
         div.classList.add('registroItem');
         div.innerHTML = `
-            <strong>${registro.data}</strong>
-            <p>Humor: ${registro.humor}</p>
+            <strong>${registro.data}</strong> | Humor: ${registro.humor}
+            ${registro.disciplina ? `<p>Disciplina: ${registro.disciplina}</p>` : ""}
             <p>Comentário: ${registro.comentario || '(Sem comentário)'}</p>
         `;
         registroLista.appendChild(div);
@@ -47,7 +48,7 @@ function atualizarGrafico() {
 
     const chartOptions = {
         responsive: true,
-        cutout: '60%', // Deixa o centro furado (doughnut)
+        cutout: '60%',
         plugins: {
             legend: {
                 position: 'bottom',
@@ -61,7 +62,6 @@ function atualizarGrafico() {
         }
     };
 
-    // Se já existe um gráfico, destrói antes de criar outro
     if (chartInstance) {
         chartInstance.destroy();
     }
@@ -88,11 +88,14 @@ humorForm.addEventListener('submit', function (event) {
     }
 
     const comentario = comentarioInput.value;
+    const data = dataInput.value ? new Date(dataInput.value).toLocaleDateString() : new Date().toLocaleDateString();
+    const disciplina = disciplinaInput.value;
 
     const novoRegistro = {
         comentario: comentario,
         humor: humorSelecionado,
-        data: new Date().toLocaleDateString()
+        data: data,
+        disciplina: disciplina
     };
 
     registrosHumor.push(novoRegistro);
@@ -100,6 +103,8 @@ humorForm.addEventListener('submit', function (event) {
     atualizarGrafico();
 
     comentarioInput.value = '';
+    disciplinaInput.value = '';
+    dataInput.value = '';
     radioButtons.forEach(radio => radio.checked = false);
 });
 
