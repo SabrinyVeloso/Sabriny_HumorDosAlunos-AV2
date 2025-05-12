@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Humor Diário</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container" id="container">
+    <h1>Bem-vindo ao Registro de Humor Diário</h1>
+
+    <!-- Seção de Registro de Humor -->
+    <div class="main-content">
+      <div class="form-section">
+        <div id="moodFormContainer" style="display:none;">
+          <h2>Registro de Humor 😊</h2>
+          
+          <form id="moodForm">
+            <!-- Campo de Data -->
+            <div class="form-group">
+              <label for="date">Data (dd/mm/aaaa):</label>
+              <input type="date" id="date" required>
+            </div>
+
+            <!-- Seletor de Humor -->
+            <div class="form-group">
+              <label for="mood">Escolha seu Humor:</label>
+              <div class="mood-buttons">
+                <button type="button" class="mood-button feliz" onclick="selectMood('feliz')">😊 Feliz</button>
+                <button type="button" class="mood-button triste" onclick="selectMood('triste')">😔 Triste</button>
+                <button type="button" class="mood-button neutro" onclick="selectMood('neutro')">😐 Neutro</button>
+              </div>
+              <input type="hidden" id="mood" required>
+            </div>
+
+            <!-- Campo de Comentários -->
+            <div class="form-group">
+              <label for="comment">Comentários:</label>
+              <textarea id="comment" rows="4" placeholder="Escreva algo sobre o seu humor..."></textarea>
+            </div>
+
+            <!-- Botões -->
+            <div class="form-group">
+              <button type="submit" class="submit-button">Registrar</button>
+              <button type="button" onclick="logoutUser()" class="logout-button">Sair</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Seção de Gráficos -->
+      <div class="chart-section">
+        <canvas id="moodChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- Formulários de Login e Cadastro -->
+    <div id="loginForm" class="auth-form">
+      <h2>Login 🔐</h2>
+      <input type="text" id="loginUsername" placeholder="Usuário" required>
+      <input type="password" id="loginPassword" placeholder="Senha" required>
+      <button type="button" onclick="loginUser()">Login</button>
+      <p>Não tem uma conta? <a href="#" onclick="showSignupForm()">Cadastre-se</a></p>
+    </div>
+
+    <div id="signupForm" class="auth-form" style="display:none;">
+      <h2>Cadastro 📝</h2>
+      <input type="text" id="signupUsername" placeholder="Usuário" required>
+      <input type="password" id="signupPassword" placeholder="Senha" required>
+      <button type="button" onclick="signupUser()">Cadastrar</button>
+      <p>Já tem uma conta? <a href="#" onclick="showLoginForm()">Faça Login</a></p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
