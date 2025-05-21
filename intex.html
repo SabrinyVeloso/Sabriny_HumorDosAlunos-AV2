@@ -1,79 +1,105 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro de Humor Diário</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sistema de Humor Diário - Sabriny</title>
+<link rel="stylesheet" href="style.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="container" id="container">
-    <h1>Bem-vindo ao Registro de Humor Diário</h1>
 
-    <!-- Seção de Registro de Humor -->
-    <div class="main-content">
-      <div class="form-section">
-        <div id="moodFormContainer" style="display:none;">
-          <h2>Registro de Humor 😊</h2>
-          
-          <form id="moodForm">
-            <!-- Campo de Data -->
-            <div class="form-group">
-              <label for="date">Data (dd/mm/aaaa):</label>
-              <input type="date" id="date" required>
-            </div>
+<header>
+  Sistema de Registro de Humor Diário - Sabriny
+</header>
 
-            <!-- Seletor de Humor -->
-            <div class="form-group">
-              <label for="mood">Escolha seu Humor:</label>
-              <div class="mood-buttons">
-                <button type="button" class="mood-button feliz" onclick="selectMood('feliz')">😊 Feliz</button>
-                <button type="button" class="mood-button triste" onclick="selectMood('triste')">😔 Triste</button>
-                <button type="button" class="mood-button neutro" onclick="selectMood('neutro')">😐 Neutro</button>
-              </div>
-              <input type="hidden" id="mood" required>
-            </div>
+<div class="container">
 
-            <!-- Campo de Comentários -->
-            <div class="form-group">
-              <label for="comment">Comentários:</label>
-              <textarea id="comment" rows="4" placeholder="Escreva algo sobre o seu humor..."></textarea>
-            </div>
+  <nav>
+    <button onclick="mostrarPagina('cadastrar')">😊 Cadastrar Humor</button>
+    <button onclick="mostrarPagina('exibir')">📋 Exibir Registros</button>
+    <button onclick="mostrarPagina('atualizar')">✏️ Atualizar Comentário</button>
+    <button onclick="mostrarPagina('verificar')">🔍 Verificar Humor Positivo</button>
+    <button onclick="mostrarPagina('grafico')">📊 Gráfico Semanal</button>
+    <button onclick="mostrarPagina('login')">🚪 Sair</button>
+  </nav>
 
-            <!-- Botões -->
-            <div class="form-group">
-              <button type="submit" class="submit-button">Registrar</button>
-              <button type="button" onclick="logoutUser()" class="logout-button">Sair</button>
-            </div>
-          </form>
+  <main>
+    <!-- Página cadastrar humor -->
+    <section id="cadastrar" class="pagina">
+      <form id="formCadastro">
+        <label for="dataInput">Data:</label>
+        <input type="date" id="dataInput" required />
+
+        <label for="humorInput">Humor:</label>
+        <select id="humorInput" required>
+          <option value="" disabled selected>Escolha o humor</option>
+          <option value="feliz">😊 Feliz</option>
+          <option value="triste">😢 Triste</option>
+          <option value="neutro">😐 Neutro</option>
+        </select>
+
+        <label for="comentarioInput">Comentário:</label>
+        <textarea id="comentarioInput" rows="3" maxlength="200" placeholder="Digite um comentário (máx 200 caracteres)"></textarea>
+
+        <label>
+          <input type="checkbox" id="detalhadoCheckbox" />
+          Registro detalhado (com nota do dia)
+        </label>
+
+        <div id="notaContainer" class="hidden">
+          <label for="notaInput">Nota do dia (0 a 10):</label>
+          <input type="number" id="notaInput" min="0" max="10" step="0.1" />
         </div>
-      </div>
 
-      <!-- Seção de Gráficos -->
-      <div class="chart-section">
-        <canvas id="moodChart" width="400" height="200"></canvas>
-      </div>
-    </div>
+        <button type="submit" class="action-btn">Cadastrar Humor</button>
+      </form>
+    </section>
 
-    <!-- Formulários de Login e Cadastro -->
-    <div id="loginForm" class="auth-form">
-      <h2>Login 🔐</h2>
-      <input type="text" id="loginUsername" placeholder="Usuário" required>
-      <input type="password" id="loginPassword" placeholder="Senha" required>
-      <button type="button" onclick="loginUser()">Login</button>
-      <p>Não tem uma conta? <a href="#" onclick="showSignupForm()">Cadastre-se</a></p>
-    </div>
+    <!-- Página exibir registros -->
+    <section id="exibir" class="pagina hidden registros">
+      <h2>Registros Cadastrados</h2>
+      <div id="listaRegistros"></div>
+    </section>
 
-    <div id="signupForm" class="auth-form" style="display:none;">
-      <h2>Cadastro 📝</h2>
-      <input type="text" id="signupUsername" placeholder="Usuário" required>
-      <input type="password" id="signupPassword" placeholder="Senha" required>
-      <button type="button" onclick="signupUser()">Cadastrar</button>
-      <p>Já tem uma conta? <a href="#" onclick="showLoginForm()">Faça Login</a></p>
-    </div>
-  </div>
+    <!-- Página atualizar comentário -->
+    <section id="atualizar" class="pagina hidden">
+      <h2>Atualizar Comentário</h2>
+      <label for="indexAtualizar">Número do registro:</label>
+      <input type="number" id="indexAtualizar" min="1" placeholder="Digite o número do registro" />
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="script.js"></script>
+      <label for="comentarioAtualizado">Novo comentário:</label>
+      <textarea id="comentarioAtualizado" rows="3" maxlength="200" placeholder="Novo comentário"></textarea>
+
+      <button class="action-btn" id="btnAtualizarComentario">Atualizar Comentário</button>
+    </section>
+
+    <!-- Página verificar humor positivo -->
+    <section id="verificar" class="pagina hidden">
+      <h2>Verificar se humor é positivo</h2>
+      <label for="indexVerificar">Número do registro:</label>
+      <input type="number" id="indexVerificar" min="1" placeholder="Digite o número do registro" />
+      <button class="action-btn" id="btnVerificarHumor">Verificar</button>
+      <p id="resultadoVerificar" style="margin-top:1rem; font-weight:bold;"></p>
+    </section>
+
+    <!-- Página gráfico semanal -->
+    <section id="grafico" class="pagina hidden" style="text-align:center;">
+      <h2>📊 Gráfico Semanal dos Humores</h2>
+      <canvas id="graficoHumores" style="max-width:600px; margin: auto;"></canvas>
+    </section>
+
+    <!-- Página login simulada -->
+    <section id="login" class="pagina hidden" style="text-align:center;">
+      <h2>Login / Cadastro</h2>
+      <p>Esta é uma página para simular a saída do sistema.</p>
+      <button onclick="mostrarPagina('cadastrar')" class="action-btn">Voltar ao Sistema</button>
+    </section>
+  </main>
+
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
