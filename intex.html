@@ -1,105 +1,81 @@
-
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Sistema de Humor Diário - Sabriny</title>
-<link rel="stylesheet" href="style.css" />
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro de Humor</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
+  <div id="paginaNome" class="pagina active">
+    <div class="container-nome">
+      <h1>Bem-vindo!</h1>
+      <label for="nomeUsuario">Digite seu nome:</label>
+      <input type="text" id="nomeUsuario" placeholder="Seu nome"/>
+      <button onclick="entrar()">Entrar</button>
+    </div>
+  </div>
 
-<header>
-  Sistema de Registro de Humor Diário - Sabriny
-</header>
+  <div id="paginaPrincipal" class="pagina hidden">
+    <header>
+      <h1 id="saudacao"></h1>
+    </header>
+    <div class="container">
+      <nav>
+        <button onclick="mostrarPagina('cadastrar')">Cadastrar Humor</button>
+        <button onclick="mostrarPagina('exibir')">Ver Registros</button>
+        <button onclick="mostrarPagina('atualizar')">Atualizar Comentário</button>
+        <button onclick="mostrarPagina('verificar')">Verificar Humor</button>
+        <button onclick="mostrarPagina('grafico')">Gráfico</button>
+        <button onclick="sair()">Sair</button>
+      </nav>
+      <main>
+        <section id="cadastrar" class="paginaInterna active">
+          <h2>Cadastrar Humor</h2>
+          <label for="dataInput">Data:</label>
+          <input type="date" id="dataInput"/>
+          <label for="humorInput">Humor:</label>
+          <select id="humorInput">
+            <option value="feliz">Feliz</option>
+            <option value="neutro">Neutro</option>
+            <option value="triste">Triste</option>
+          </select>
+          <label for="comentarioInput">Comentário:</label>
+          <textarea id="comentarioInput"></textarea>
+          <button class="action-btn" onclick="cadastrarHumor()">Salvar</button>
+        </section>
 
-<div class="container">
+        <section id="exibir" class="paginaInterna hidden">
+          <h2>Registros</h2>
+          <div id="listaRegistros" class="registros"></div>
+        </section>
 
-  <nav>
-    <button onclick="mostrarPagina('cadastrar')">😊 Cadastrar Humor</button>
-    <button onclick="mostrarPagina('exibir')">📋 Exibir Registros</button>
-    <button onclick="mostrarPagina('atualizar')">✏️ Atualizar Comentário</button>
-    <button onclick="mostrarPagina('verificar')">🔍 Verificar Humor Positivo</button>
-    <button onclick="mostrarPagina('grafico')">📊 Gráfico Semanal</button>
-    <button onclick="mostrarPagina('login')">🚪 Sair</button>
-  </nav>
+        <section id="atualizar" class="paginaInterna hidden">
+          <h2>Atualizar Comentário</h2>
+          <label for="dataAtualizar">Data:</label>
+          <input type="date" id="dataAtualizar"/>
+          <label for="novoComentario">Novo Comentário:</label>
+          <textarea id="novoComentario"></textarea>
+          <button class="action-btn" onclick="atualizarComentario()">Atualizar</button>
+        </section>
 
-  <main>
-    <!-- Página cadastrar humor -->
-    <section id="cadastrar" class="pagina">
-      <form id="formCadastro">
-        <label for="dataInput">Data:</label>
-        <input type="date" id="dataInput" required />
+        <section id="verificar" class="paginaInterna hidden">
+          <h2>Verificar Humor</h2>
+          <label for="dataVerificar">Data:</label>
+          <input type="date" id="dataVerificar"/>
+          <button class="action-btn" onclick="verificarHumor()">Verificar</button>
+          <div id="resultadoVerificacao"></div>
+        </section>
 
-        <label for="humorInput">Humor:</label>
-        <select id="humorInput" required>
-          <option value="" disabled selected>Escolha o humor</option>
-          <option value="feliz">😊 Feliz</option>
-          <option value="triste">😢 Triste</option>
-          <option value="neutro">😐 Neutro</option>
-        </select>
+        <section id="grafico" class="paginaInterna hidden">
+          <h2>Gráfico de Humor</h2>
+          <canvas id="graficoHumores" width="400" height="200"></canvas>
+        </section>
+      </main>
+    </div>
+  </div>
 
-        <label for="comentarioInput">Comentário:</label>
-        <textarea id="comentarioInput" rows="3" maxlength="200" placeholder="Digite um comentário (máx 200 caracteres)"></textarea>
-
-        <label>
-          <input type="checkbox" id="detalhadoCheckbox" />
-          Registro detalhado (com nota do dia)
-        </label>
-
-        <div id="notaContainer" class="hidden">
-          <label for="notaInput">Nota do dia (0 a 10):</label>
-          <input type="number" id="notaInput" min="0" max="10" step="0.1" />
-        </div>
-
-        <button type="submit" class="action-btn">Cadastrar Humor</button>
-      </form>
-    </section>
-
-    <!-- Página exibir registros -->
-    <section id="exibir" class="pagina hidden registros">
-      <h2>Registros Cadastrados</h2>
-      <div id="listaRegistros"></div>
-    </section>
-
-    <!-- Página atualizar comentário -->
-    <section id="atualizar" class="pagina hidden">
-      <h2>Atualizar Comentário</h2>
-      <label for="indexAtualizar">Número do registro:</label>
-      <input type="number" id="indexAtualizar" min="1" placeholder="Digite o número do registro" />
-
-      <label for="comentarioAtualizado">Novo comentário:</label>
-      <textarea id="comentarioAtualizado" rows="3" maxlength="200" placeholder="Novo comentário"></textarea>
-
-      <button class="action-btn" id="btnAtualizarComentario">Atualizar Comentário</button>
-    </section>
-
-    <!-- Página verificar humor positivo -->
-    <section id="verificar" class="pagina hidden">
-      <h2>Verificar se humor é positivo</h2>
-      <label for="indexVerificar">Número do registro:</label>
-      <input type="number" id="indexVerificar" min="1" placeholder="Digite o número do registro" />
-      <button class="action-btn" id="btnVerificarHumor">Verificar</button>
-      <p id="resultadoVerificar" style="margin-top:1rem; font-weight:bold;"></p>
-    </section>
-
-    <!-- Página gráfico semanal -->
-    <section id="grafico" class="pagina hidden" style="text-align:center;">
-      <h2>📊 Gráfico Semanal dos Humores</h2>
-      <canvas id="graficoHumores" style="max-width:600px; margin: auto;"></canvas>
-    </section>
-
-    <!-- Página login simulada -->
-    <section id="login" class="pagina hidden" style="text-align:center;">
-      <h2>Login / Cadastro</h2>
-      <p>Esta é uma página para simular a saída do sistema.</p>
-      <button onclick="mostrarPagina('cadastrar')" class="action-btn">Voltar ao Sistema</button>
-    </section>
-  </main>
-
-</div>
-
-<script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

@@ -1,112 +1,157 @@
-const registros = [];
+let registros = [];
+let nomeUsuario = '';
 
-// Função para mostrar uma página e esconder as outras
-function mostrarPagina(id) {
-  const paginas = document.querySelectorAll('.pagina');
-  paginas.forEach(p => p.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
+function getDiaSemanaLocal(dateString) {
+  const partes = dateString.split('-'); // "YYYY-MM-DD"
+  const ano = parseInt(partes[0], 10);
+  const mes = parseInt(partes[1], 10) - 1; // mês começa em 0
+  const dia = parseInt(partes[2], 10);
+  const dataObj = new Date(ano, mes, dia);
+  return dataObj.getDay();
+}
 
-  if(id === 'exibir') {
-    atualizarListaRegistros();
+function entrar() {
+  const nomeInput = document.getElementById('nomeUsuario').value.trim();
+  if (!nomeInput) {
+    alert("Por favor, digite seu nome.");
+    return;
   }
-  if(id === 'login') {
-    // Reset campos se desejar
-    document.getElementById('formCadastro').reset();
+
+  nomeUsuario = nomeInput;
+  document.getElementById('saudacao').textContent = `Olá, ${nomeUsuario}!`;
+  document.getElementById('paginaNome').classList.remove('active');
+  document.getElementById('paginaNome').classList.add('hidden');
+  document.getElementById('paginaPrincipal').classList.add('active');
+}
+
+function mostrarPagina(paginaId) {
+  document.querySelectorAll('.paginaInterna').forEach(p => {
+    p.classList.remove('active');
+    p.classList.add('hidden');
+  });
+  const pagina = document.getElementById(paginaId);
+  pagina.classList.add('active');
+  pagina.classList.remove('hidden');
+
+  if (paginaId === 'exibir') exibirRegistros();
+  if (paginaId === 'grafico') gerarGraficoHumores();
+}
+
+function cadastrarHumor() {
+  const data = document.getElementById('dataInput').value;
+  if (!data) {
+    alert("Selecione uma data.");
+    return;
+  }
+  
+  const diaSemana = getDiaSemanaLocal(data);
+  
+  if (diaSemana === 0 || diaSemana === 6) {
+    alert("Não é permitido registrar humor aos sábados e domingos.");
+    return;
+  }
+
+  const humor = document.getElementById('humorInput').value;
+  const comentario = document.getElementById('comentarioInput').value;
+
+  registros.push({ data, humor, comentario });
+  alert("Humor salvo!");
+
+  document.getElementById('dataInput').value = '';
+  document.getElementById('comentarioInput').value = '';
+}
+
+function exibirRegistros() {
+  const container = document.getElementById('listaRegistros');
+  container.innerHTML = registros.map(r =>
+    `<p><strong>${r.data}</strong> - ${r.humor}<br>${r.comentario}</p><hr>`
+  ).join('');
+}
+
+function atualizarComentario() {
+  const data = document.getElementById('dataAtualizar').value;
+  const novoComentario = document.getElementById('novoComentario').value;
+  const registro = registros.find(r => r.data === data);
+  if (registro) {
+    registro.comentario = novoComentario;
+    alert("Comentário atualizado!");
+  } else {
+    alert("Registro não encontrado.");
   }
 }
 
-// Mostrar/esconder campo nota do dia
-document.getElementById('detalhadoCheckbox').addEventListener('change', (e) => {
-  const notaContainer = document.getElementById('notaContainer');
-  notaContainer.classList.toggle('hidden', !e.target.checked);
-});
-
-// Cadastrar humor
-document.getElementById('formCadastro').addEventListener('submit', (e) => {
-  e.preventDefault();
-
-  const data = document.getElementById('dataInput').value;
-  const humor = document.getElementById('humorInput').value;
-  const comentario = document.getElementById('comentarioInput').value.trim();
-  const detalhado = document.getElementById('detalhadoCheckbox').checked;
-  const nota = detalhado ? parseFloat(document.getElementById('notaInput').value) : null;
-
-  if (!data || !humor) {
-    alert('Preencha data e humor!');
-    return;
+function verificarHumor() {
+  const data = document.getElementById('dataVerificar').value;
+  const reg = registros.find(r => r.data === data);
+  const resultado = document.getElementById('resultadoVerificacao');
+  if (reg) {
+    resultado.textContent = reg.humor === 'feliz' ? "😊 Humor positivo!" : "😐 Humor não positivo.";
+    resultado.className = reg.humor === 'feliz' ? "positivo" : "negativo";
+  } else {
+    resultado.textContent = "Registro não encontrado.";
+    resultado.className = "";
   }
+}
 
-  if (detalhado && (isNaN(nota) || nota < 0 || nota > 10)) {
-    alert('Informe uma nota válida entre 0 e 10.');
-    return;
+function sair() {
+  if (confirm("Deseja sair?")) {
+    nomeUsuario = '';
+    document.getElementById('paginaPrincipal').classList.remove('active');
+    document.getElementById('paginaPrincipal').classList.add('hidden');
+    document.getElementById('paginaNome').classList.add('active');
+    document.getElementById('paginaNome').classList.remove('hidden');
+    document.getElementById('nomeUsuario').value = '';
   }
+}
 
-  registros.push({data, humor, comentario, nota});
-  alert('Registro cadastrado com sucesso!');
-  e.target.reset();
-  mostrarPagina('exibir');
-});
+function gerarGraficoHumores() {
+  const ctx = document.getElementById('graficoHumores').getContext('2d');
+  const diasUteis = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
+  const dadosPorDia = { 'Seg': [], 'Ter': [], 'Qua': [], 'Qui': [], 'Sex': [] };
+  const valores = { feliz: 3, neutro: 2, triste: 1 };
 
-// Atualizar lista de registros na página "Exibir Registros"
-function atualizarListaRegistros() {
-  const lista = document.getElementById('listaRegistros');
-  lista.innerHTML = '';
+  registros.forEach(r => {
+    const diaSemana = getDiaSemanaLocal(r.data);
+    const diaNome = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][diaSemana];
+    if (diasUteis.includes(diaNome)) {
+      dadosPorDia[diaNome].push(valores[r.humor]);
+    }
+  });
 
-  if(registros.length === 0) {
-    lista.innerHTML = '<p>Nenhum registro cadastrado.</p>';
-    return;
-  }
+  const medias = diasUteis.map(dia => {
+    const dados = dadosPorDia[dia];
+    return dados.length ? (dados.reduce((a, b) => a + b, 0) / dados.length) : 0;
+  });
 
-  registros.forEach((reg, i) => {
-    const div = document.createElement('div');
-    div.className = 'registro';
+  if (window.graficoInstance) window.graficoInstance.destroy();
 
-    div.innerHTML = `
-      <header>Registro #${i+1} - ${reg.data}</header>
-      <p><strong>Humor:</strong> ${reg.humor}</p>
-      <p><strong>Comentário:</strong> ${reg.comentario || '(sem comentário)'}</p>
-      ${reg.nota !== null && reg.nota !== undefined ? `<p><strong>Nota do dia:</strong> ${reg.nota.toFixed(1)}</p>` : ''}
-    `;
-    lista.appendChild(div);
+  window.graficoInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: diasUteis,
+      datasets: [{
+        label: 'Média do Humor',
+        data: medias,
+        backgroundColor: [
+          'yellow',   // feliz
+          'purple',   // neutro
+          'blue'      // triste
+        ],
+        backgroundColor: medias.map(media => {
+          if (media >= 2.5) return 'yellow';     // feliz
+          else if (media >= 1.5) return 'purple'; // neutro
+          else return 'blue';                     // triste
+        })
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          min: 0,
+          max: 3,
+          ticks: { stepSize: 1 }
+        }
+      }
+    }
   });
 }
-
-// Atualizar comentário
-document.getElementById('btnAtualizarComentario').addEventListener('click', () => {
-  const idx = parseInt(document.getElementById('indexAtualizar').value) - 1;
-  const novoComentario = document.getElementById('comentarioAtualizado').value.trim();
-
-  if (isNaN(idx) || idx < 0 || idx >= registros.length) {
-    alert('Número de registro inválido!');
-    return;
-  }
-  registros[idx].comentario = novoComentario;
-  alert(`Comentário do registro #${idx+1} atualizado!`);
-  document.getElementById('indexAtualizar').value = '';
-  document.getElementById('comentarioAtualizado').value = '';
-  mostrarPagina('exibir');
-});
-
-// Verificar se humor é positivo
-document.getElementById('btnVerificarHumor').addEventListener('click', () => {
-  const idx = parseInt(document.getElementById('indexVerificar').value) - 1;
-  const resultado = document.getElementById('resultadoVerificar');
-
-  if (isNaN(idx) || idx < 0 || idx >= registros.length) {
-    resultado.textContent = 'Número de registro inválido!';
-    resultado.style.color = 'red';
-    return;
-  }
-
-  const humor = registros[idx].humor.toLowerCase();
-  if (humor === 'feliz') {
-    resultado.textContent = 'O humor do registro é POSITIVO 😊';
-    resultado.style.color = 'green';
-  } else {
-    resultado.textContent = 'O humor do registro NÃO é positivo.';
-    resultado.style.color = 'orange';
-  }
-});
-
-// Inicializa mostrando a página cadastrar
-mostrarPagina('cadastrar');
