@@ -1,78 +1,62 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Registro de Humor</title>
   <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div id="paginaNome" class="pagina active">
-    <div class="container-nome">
+  <div id="paginaNome" class="pagina">
+    <div class="conteudo-centralizado">
       <h1>Bem-vindo!</h1>
       <label for="nomeUsuario">Digite seu nome:</label>
-      <input type="text" id="nomeUsuario" placeholder="Seu nome"/>
+      <input type="text" id="nomeUsuario" placeholder="Seu nome" />
       <button onclick="entrar()">Entrar</button>
     </div>
   </div>
 
-  <div id="paginaPrincipal" class="pagina hidden">
-    <header>
-      <h1 id="saudacao"></h1>
-    </header>
-    <div class="container">
-      <nav>
-        <button onclick="mostrarPagina('cadastrar')">Cadastrar Humor</button>
-        <button onclick="mostrarPagina('exibir')">Ver Registros</button>
-        <button onclick="mostrarPagina('atualizar')">Atualizar Comentário</button>
-        <button onclick="mostrarPagina('verificar')">Verificar Humor</button>
-        <button onclick="mostrarPagina('grafico')">Gráfico</button>
-        <button onclick="sair()">Sair</button>
-      </nav>
-      <main>
-        <section id="cadastrar" class="paginaInterna active">
-          <h2>Cadastrar Humor</h2>
-          <label for="dataInput">Data:</label>
-          <input type="date" id="dataInput"/>
-          <label for="humorInput">Humor:</label>
-          <select id="humorInput">
-            <option value="feliz">Feliz</option>
-            <option value="neutro">Neutro</option>
-            <option value="triste">Triste</option>
-          </select>
-          <label for="comentarioInput">Comentário:</label>
-          <textarea id="comentarioInput"></textarea>
-          <button class="action-btn" onclick="cadastrarHumor()">Salvar</button>
-        </section>
+  <div id="paginaPrincipal" class="pagina" style="display:none;">
+    <nav>
+      <h2 id="saudacao"></h2>
+      <ul>
+        <li><button onclick="mostrarPagina('cadastrar')">Cadastrar Humor 😀</button></li>
+        <li><button onclick="mostrarPagina('registros')">Ver Registros 📁</button></li>
+        <li><button onclick="mostrarPagina('grafico')">Ver Gráfico 📊 </button></li>
+        <li><button onclick="sair()">Sair 🏃‍♂️ </button></li>
+      </ul>
+    </nav>
 
-        <section id="exibir" class="paginaInterna hidden">
-          <h2>Registros</h2>
-          <div id="listaRegistros" class="registros"></div>
-        </section>
+    <main>
+      <section id="cadastrar" class="secao">
+        <h3>Cadastro de Humor</h3>
+        <label for="data">📅 Data: </label>
+        <input type="date" id="data"/>
 
-        <section id="atualizar" class="paginaInterna hidden">
-          <h2>Atualizar Comentário</h2>
-          <label for="dataAtualizar">Data:</label>
-          <input type="date" id="dataAtualizar"/>
-          <label for="novoComentario">Novo Comentário:</label>
-          <textarea id="novoComentario"></textarea>
-          <button class="action-btn" onclick="atualizarComentario()">Atualizar</button>
-        </section>
+        <label for="humor">Humor:</label>
+        <select id="humor">
+          <option value="feliz">Feliz 😁 </option>
+          <option value="triste">Triste 😭 </option>
+          <option value="neutro">Neutro 😐 </option>
+        </select>
 
-        <section id="verificar" class="paginaInterna hidden">
-          <h2>Verificar Humor</h2>
-          <label for="dataVerificar">Data:</label>
-          <input type="date" id="dataVerificar"/>
-          <button class="action-btn" onclick="verificarHumor()">Verificar</button>
-          <div id="resultadoVerificacao"></div>
-        </section>
+        <label for="comentario">📜 Comentário:</label>
+        <textarea id="comentario" rows="3"></textarea>
 
-        <section id="grafico" class="paginaInterna hidden">
-          <h2>Gráfico de Humor</h2>
-          <canvas id="graficoHumores" width="400" height="200"></canvas>
-        </section>
-      </main>
-    </div>
+        <button onclick="cadastrarHumor()">Registrar</button>
+      </section>
+
+      <section id="registros" class="secao" style="display:none;">
+        <h3>Registros</h3>
+        <div id="listaRegistros" class="registros"></div>
+      </section>
+
+      <section id="grafico" class="secao" style="display:none;">
+        <h3>Gráfico de Humor</h3>
+        <canvas id="graficoHumor"></canvas>
+      </section>
+    </main>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

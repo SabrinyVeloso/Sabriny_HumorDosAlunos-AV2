@@ -1,155 +1,131 @@
-let registros = [];
 let nomeUsuario = '';
+let registros = [];
 
-function getDiaSemanaLocal(dateString) {
-  const partes = dateString.split('-'); // "YYYY-MM-DD"
-  const ano = parseInt(partes[0], 10);
-  const mes = parseInt(partes[1], 10) - 1; // mês começa em 0
-  const dia = parseInt(partes[2], 10);
-  const dataObj = new Date(ano, mes, dia);
-  return dataObj.getDay();
+function mostrarPagina(pagina) {
+  document.querySelectorAll('.secao').forEach(secao => secao.style.display = 'none');
+  document.getElementById(pagina).style.display = 'block';
+
+  if (pagina === 'registros') exibirRegistros();
+  if (pagina === 'grafico') gerarGraficoHumores();
 }
 
 function entrar() {
-  const nomeInput = document.getElementById('nomeUsuario').value.trim();
-  if (!nomeInput) {
-    alert("Por favor, digite seu nome.");
+  const nomeInput = document.getElementById('nomeUsuario');
+  if (nomeInput.value.trim() === '') {
+    alert('Por favor, insira seu nome.');
     return;
   }
 
-  nomeUsuario = nomeInput;
-  document.getElementById('saudacao').textContent = `Olá, ${nomeUsuario}!`;
-  document.getElementById('paginaNome').classList.remove('active');
-  document.getElementById('paginaNome').classList.add('hidden');
-  document.getElementById('paginaPrincipal').classList.add('active');
+  nomeUsuario = nomeInput.value.trim();
+  document.getElementById('saudacao').innerText = `Olá, ${nomeUsuario}!`;
+  document.getElementById('paginaNome').style.display = 'none';
+  document.getElementById('paginaPrincipal').style.display = 'flex';
+  mostrarPagina('cadastrar');
 }
 
-function mostrarPagina(paginaId) {
-  document.querySelectorAll('.paginaInterna').forEach(p => {
-    p.classList.remove('active');
-    p.classList.add('hidden');
-  });
-  const pagina = document.getElementById(paginaId);
-  pagina.classList.add('active');
-  pagina.classList.remove('hidden');
-
-  if (paginaId === 'exibir') exibirRegistros();
-  if (paginaId === 'grafico') gerarGraficoHumores();
+function sair() {
+  nomeUsuario = '';
+  document.getElementById('paginaNome').style.display = 'flex';
+  document.getElementById('paginaPrincipal').style.display = 'none';
 }
 
 function cadastrarHumor() {
-  const data = document.getElementById('dataInput').value;
+  const data = document.getElementById('data').value;
+  const humor = document.getElementById('humor').value;
+  const comentario = document.getElementById('comentario').value.trim();
+
   if (!data) {
-    alert("Selecione uma data.");
-    return;
-  }
-  
-  const diaSemana = getDiaSemanaLocal(data);
-  
-  if (diaSemana === 0 || diaSemana === 6) {
-    alert("Não é permitido registrar humor aos sábados e domingos.");
+    alert('Por favor, selecione uma data.');
     return;
   }
 
-  const humor = document.getElementById('humorInput').value;
-  const comentario = document.getElementById('comentarioInput').value;
+  const dataSelecionada = new Date(data + "T00:00:00");
+  const diaSemana = dataSelecionada.getDay(); // 0 = domingo, 6 = sábado
+
+  if (diaSemana === 0 || diaSemana === 6) {
+    alert('Registros não são permitidos aos finais de semana.');
+    return;
+  }
+
+  if (registros.find(r => r.data === data)) {
+    alert('Você já registrou humor nesta data.');
+    return;
+  }
 
   registros.push({ data, humor, comentario });
-  alert("Humor salvo!");
-
-  document.getElementById('dataInput').value = '';
-  document.getElementById('comentarioInput').value = '';
+  alert('Humor registrado com sucesso!');
+  document.getElementById('data').value = '';
+  document.getElementById('comentario').value = '';
 }
 
 function exibirRegistros() {
   const container = document.getElementById('listaRegistros');
-  container.innerHTML = registros.map(r =>
-    `<p><strong>${r.data}</strong> - ${r.humor}<br>${r.comentario}</p><hr>`
+  if (registros.length === 0) {
+    container.innerHTML = '<p>Nenhum registro encontrado.</p>';
+    return;
+  }
+
+  registros.sort((a, b) => new Date(a.data) - new Date(b.data));
+
+  container.innerHTML = registros.map(r => 
+    `
+      <div class="registro">
+        <p><strong>Data:</strong> ${r.data}</p>
+        <p><strong>Humor:</strong> ${r.humor}</p>
+        <p><strong>Comentário:</strong> ${r.comentario || 'Sem comentário.'}</p>
+      </div>
+    `
   ).join('');
 }
 
-function atualizarComentario() {
-  const data = document.getElementById('dataAtualizar').value;
-  const novoComentario = document.getElementById('novoComentario').value;
-  const registro = registros.find(r => r.data === data);
-  if (registro) {
-    registro.comentario = novoComentario;
-    alert("Comentário atualizado!");
-  } else {
-    alert("Registro não encontrado.");
-  }
-}
-
-function verificarHumor() {
-  const data = document.getElementById('dataVerificar').value;
-  const reg = registros.find(r => r.data === data);
-  const resultado = document.getElementById('resultadoVerificacao');
-  if (reg) {
-    resultado.textContent = reg.humor === 'feliz' ? "😊 Humor positivo!" : "😐 Humor não positivo.";
-    resultado.className = reg.humor === 'feliz' ? "positivo" : "negativo";
-  } else {
-    resultado.textContent = "Registro não encontrado.";
-    resultado.className = "";
-  }
-}
-
-function sair() {
-  if (confirm("Deseja sair?")) {
-    nomeUsuario = '';
-    document.getElementById('paginaPrincipal').classList.remove('active');
-    document.getElementById('paginaPrincipal').classList.add('hidden');
-    document.getElementById('paginaNome').classList.add('active');
-    document.getElementById('paginaNome').classList.remove('hidden');
-    document.getElementById('nomeUsuario').value = '';
-  }
-}
-
 function gerarGraficoHumores() {
-  const ctx = document.getElementById('graficoHumores').getContext('2d');
-  const diasUteis = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
-  const dadosPorDia = { 'Seg': [], 'Ter': [], 'Qua': [], 'Qui': [], 'Sex': [] };
-  const valores = { feliz: 3, neutro: 2, triste: 1 };
+  const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  const contagem = {
+    feliz: Array(7).fill(0),
+    triste: Array(7).fill(0),
+    neutro: Array(7).fill(0),
+  };
 
   registros.forEach(r => {
-    const diaSemana = getDiaSemanaLocal(r.data);
-    const diaNome = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][diaSemana];
-    if (diasUteis.includes(diaNome)) {
-      dadosPorDia[diaNome].push(valores[r.humor]);
-    }
+    const dia = new Date(r.data + "T00:00:00").getDay();
+    contagem[r.humor][dia]++;
   });
 
-  const medias = diasUteis.map(dia => {
-    const dados = dadosPorDia[dia];
-    return dados.length ? (dados.reduce((a, b) => a + b, 0) / dados.length) : 0;
-  });
+  const ctx = document.getElementById('graficoHumor').getContext('2d');
+  if (window.graficoInstancia) {
+    window.graficoInstancia.destroy();
+  }
 
-  if (window.graficoInstance) window.graficoInstance.destroy();
-
-  window.graficoInstance = new Chart(ctx, {
+  window.graficoInstancia = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: diasUteis,
-      datasets: [{
-        label: 'Média do Humor',
-        data: medias,
-        backgroundColor: [
-          'yellow',   // feliz
-          'purple',   // neutro
-          'blue'      // triste
-        ],
-        backgroundColor: medias.map(media => {
-          if (media >= 2.5) return 'yellow';     // feliz
-          else if (media >= 1.5) return 'purple'; // neutro
-          else return 'blue';                     // triste
-        })
-      }]
+      labels: diasSemana,
+      datasets: [
+        {
+          label: 'Feliz',
+          data: contagem.feliz,
+          backgroundColor: '#FFD700'
+        },
+        {
+          label: 'Triste',
+          data: contagem.triste,
+          backgroundColor: '#4B92DB'
+        },
+        {
+          label: 'Neutro',
+          data: contagem.neutro,
+          backgroundColor: '#9B59B6'
+        }
+      ]
     },
     options: {
+      responsive: true,
       scales: {
         y: {
-          min: 0,
-          max: 3,
-          ticks: { stepSize: 1 }
+          beginAtZero: true,
+          title: { display: true, text: 'Quantidade' }
+
+          
         }
       }
     }
